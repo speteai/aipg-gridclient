@@ -18,7 +18,7 @@ callers. `gridclient` smooths them:
 | A request with the default `Python-urllib` User-Agent is blocked with a blank **403**. | Every request sends an explicit `User-Agent`. |
 | Image models are **not** in `/v1/models`, and `"auto"` is rejected for images. | `image_models()` discovers them; `generate_image()` requires a model and validates `size` (512–1536). |
 | `402` / `413` / `401` come back as terse JSON. | Mapped to clear, actionable `GridError` messages. |
-| No balance endpoint exists. | `account()` returns what the grid does expose; the docstring says so. |
+| Finding your credit balance isn't obvious. | `credits()` / `balance_usd()` read `/v1/account/credits` so you can check funds before a `402`. |
 
 ## Install
 

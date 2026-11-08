@@ -12,7 +12,8 @@ Why this exists (things that bite raw callers of the grid):
     rejected). -> image_models() discovers them; generate_image() requires a model
     and validates size (512-1536).
   • 402/413/401 come back as terse JSON. -> mapped to clear GridError messages.
-  • There is no balance endpoint; account() returns what the grid does expose.
+  • Balance lives at /v1/account/credits. -> credits() / balance_usd() read it,
+    so you can check funds before a call instead of hitting a 402.
 
 Stdlib only (Python 3.8+). No pip install.
 
@@ -113,8 +114,17 @@ class GridClient:
         return []
 
     def account(self):
-        """Linked account info the grid exposes (no credit balance available)."""
+        """Linked account info the grid exposes (wallet, payout config)."""
         return self._request("GET", "/account")
+
+    def credits(self):
+        """Remaining credit balance. Returns the /v1/account/credits object;
+        `total_spendable_usd` is the number you usually want."""
+        return self._request("GET", "/account/credits")
+
+    def balance_usd(self):
+        """Shortcut: remaining spendable balance in USD (float)."""
+        return self.credits().get("total_spendable_usd")
 
     # ---- chat -----------------------------------------------------------
     def chat(self, model, messages, max_tokens=None, return_raw=False, **kwargs):
